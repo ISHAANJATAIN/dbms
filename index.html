@@ -105,6 +105,9 @@
                     <input type="text" placeholder="Search shipments...">
                 </div>
                 <div class="header-actions">
+                    <button class="btn-primary" onclick="app.showModal('advanced-shipment-modal')" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-right: 10px;">
+                        <ion-icon name="rocket-outline"></ion-icon> Advanced Create
+                    </button>
                     <button class="btn-primary" onclick="app.showModal('shipment-modal')">
                         <ion-icon name="add-outline"></ion-icon> Create Shipment
                     </button>
@@ -252,6 +255,7 @@
     </div>
 
     <!-- Modals -->
+    <!-- Simple Shipment Modal (Original) -->
     <div id="shipment-modal" class="modal-overlay">
         <div class="modal-content glass-panel">
             <div class="modal-header">
@@ -289,6 +293,178 @@
                     <button type="submit" class="btn-primary">Save Shipment</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Advanced Shipment Modal (New) -->
+    <div id="advanced-shipment-modal" class="modal-overlay">
+        <div class="modal-content glass-panel" style="max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2>🚀 Advanced Shipment Creation</h2>
+                <button class="close-btn" onclick="app.hideModal('advanced-shipment-modal')">&times;</button>
+            </div>
+            
+            <!-- Tabs for different sections -->
+            <div class="modal-tabs">
+                <button class="tab-btn active" data-tab="customer-section">👤 Customer</button>
+                <button class="tab-btn" data-tab="route-section">🗺️ Route</button>
+                <button class="tab-btn" data-tab="vehicle-section">🚗 Vehicle</button>
+                <button class="tab-btn" data-tab="shipment-section">📦 Shipment</button>
+            </div>
+
+            <form id="advanced-shipment-form" style="padding: 20px;">
+                <!-- Customer Section -->
+                <div id="customer-section" class="tab-content active">
+                    <h3>Select or Add Customer</h3>
+                    <div class="form-row">
+                        <div class="input-group" style="flex: 1;">
+                            <label>Existing Customer ID</label>
+                            <select id="existing-customer" name="existingCustomerID">
+                                <option value="">-- Create New Customer --</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: flex-end; gap: 10px;">
+                            <button type="button" class="btn-secondary" onclick="app.toggleNewCustomerForm()">+ New</button>
+                        </div>
+                    </div>
+
+                    <div id="new-customer-form" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+                        <h4>Create New Customer</h4>
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label>Customer Name *</label>
+                                <input type="text" id="new-customer-name" placeholder="John Doe">
+                            </div>
+                            <div class="input-group">
+                                <label>Email</label>
+                                <input type="email" id="new-customer-email" placeholder="john@example.com">
+                            </div>
+                            <div class="input-group">
+                                <label>Phone</label>
+                                <input type="tel" id="new-customer-phone" placeholder="+91 9876543210">
+                            </div>
+                            <div class="input-group">
+                                <label>Address</label>
+                                <input type="text" id="new-customer-address" placeholder="123 Main St">
+                            </div>
+                        </div>
+                        <button type="button" class="btn-primary" onclick="app.createNewCustomer()">Create Customer</button>
+                    </div>
+                </div>
+
+                <!-- Route Section -->
+                <div id="route-section" class="tab-content">
+                    <h3>Select or Add Route</h3>
+                    <div class="form-row">
+                        <div class="input-group" style="flex: 1;">
+                            <label>Existing Route ID</label>
+                            <select id="existing-route" name="existingRouteID">
+                                <option value="">-- Create New Route --</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: flex-end; gap: 10px;">
+                            <button type="button" class="btn-secondary" onclick="app.toggleNewRouteForm()">+ New</button>
+                        </div>
+                    </div>
+
+                    <div id="new-route-form" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+                        <h4>Create New Route</h4>
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label>Source *</label>
+                                <input type="text" id="new-route-source" placeholder="Mumbai">
+                            </div>
+                            <div class="input-group">
+                                <label>Destination *</label>
+                                <input type="text" id="new-route-destination" placeholder="Delhi">
+                            </div>
+                            <div class="input-group">
+                                <label>Distance (km)</label>
+                                <input type="number" id="new-route-distance" step="0.01" placeholder="1400">
+                            </div>
+                            <div class="input-group">
+                                <label>Estimated Time</label>
+                                <input type="text" id="new-route-time" placeholder="24 hours">
+                            </div>
+                        </div>
+                        <button type="button" class="btn-primary" onclick="app.createNewRoute()">Create Route</button>
+                    </div>
+                </div>
+
+                <!-- Vehicle Section -->
+                <div id="vehicle-section" class="tab-content">
+                    <h3>Select or Add Vehicle</h3>
+                    <div class="form-row">
+                        <div class="input-group" style="flex: 1;">
+                            <label>Existing Vehicle ID</label>
+                            <select id="existing-vehicle" name="existingVehicleID">
+                                <option value="">-- Create New Vehicle --</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: flex-end; gap: 10px;">
+                            <button type="button" class="btn-secondary" onclick="app.toggleNewVehicleForm()">+ New</button>
+                        </div>
+                    </div>
+
+                    <div id="new-vehicle-form" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+                        <h4>Create New Vehicle</h4>
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label>Vehicle Number *</label>
+                                <input type="text" id="new-vehicle-number" placeholder="MH01AB1234">
+                            </div>
+                            <div class="input-group">
+                                <label>Vehicle Type *</label>
+                                <select id="new-vehicle-type">
+                                    <option>Truck</option>
+                                    <option>Van</option>
+                                    <option>Bike</option>
+                                    <option>Car</option>
+                                    <option>Bus</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Capacity (kg) *</label>
+                                <input type="number" id="new-vehicle-capacity" step="0.01" placeholder="5000">
+                            </div>
+                            <div class="input-group">
+                                <label>Status</label>
+                                <select id="new-vehicle-status">
+                                    <option>Available</option>
+                                    <option>In Transit</option>
+                                    <option>Maintenance</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-primary" onclick="app.createNewVehicle()">Create Vehicle</button>
+                    </div>
+                </div>
+
+                <!-- Shipment Details Section -->
+                <div id="shipment-section" class="tab-content">
+                    <h3>Shipment Details</h3>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Weight (kg) *</label>
+                            <input type="number" id="shipment-weight" name="weight" step="0.01" placeholder="500" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Pickup Date *</label>
+                            <input type="date" id="shipment-pickup" name="pickup" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Delivery Date *</label>
+                            <input type="date" id="shipment-delivery" name="delivery" required>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button type="button" class="btn-secondary" onclick="app.prevTab()">← Previous</button>
+                <button type="button" class="btn-secondary" onclick="app.nextTab()">Next →</button>
+                <button type="submit" class="btn-primary" onclick="app.submitAdvancedShipment()">✅ Create Shipment</button>
+            </div>
         </div>
     </div>
 

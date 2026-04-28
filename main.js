@@ -1,10 +1,15 @@
 const app = {
     user: null,
+    currentTab: 0,
+    newCustomerData: null,
+    newRouteData: null,
+    newVehicleData: null,
 
     init() {
         this.bindLogin();
         this.bindNavigation();
         this.bindForms();
+        this.setupAdvancedModal();
     },
 
     bindLogin() {
@@ -131,6 +136,283 @@ const app = {
         });
     },
 
+    // =============== ADVANCED MODAL FUNCTIONS ===============
+    setupAdvancedModal() {
+        // Load existing data for dropdowns
+        this.loadDropdownData();
+        
+        // Setup tab navigation
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach((btn, idx) => {
+            btn.addEventListener('click', () => this.switchTab(idx));
+        });
+    },
+
+    async loadDropdownData() {
+        try {
+            // Load customers
+            const customers = await fetch('/api/customers').then(r => r.json());
+            const customerSelect = document.getElementById('existing-customer');
+            customers.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.CustomerID;
+                option.textContent = `${c.CustomerID} - ${c.Name}`;
+                customerSelect.appendChild(option);
+            });
+
+            // Load routes
+            const routes = await fetch('/api/routes').then(r => r.json());
+            const routeSelect = document.getElementById('existing-route');
+            routes.forEach(r => {
+                const option = document.createElement('option');
+                option.value = r.RouteID;
+                option.textContent = `${r.RouteID} - ${r.Source} → ${r.Destination}`;
+                routeSelect.appendChild(option);
+            });
+
+            // Load vehicles
+            const vehicles = await fetch('/api/vehicles').then(r => r.json());
+            const vehicleSelect = document.getElementById('existing-vehicle');
+            vehicles.forEach(v => {
+                const option = document.createElement('option');
+                option.value = v.VehicleID;
+                option.textContent = `${v.VehicleID} - ${v.VehicleNumber} (${v.VehicleType})`;
+                vehicleSelect.appendChild(option);
+            });
+        } catch (err) {
+            console.error('Error loading dropdown data:', err);
+        }
+    },
+
+    switchTab(tabIndex) {
+        this.currentTab = tabIndex;
+        const tabs = document.querySelectorAll('.tab-content');
+        const buttons = document.querySelectorAll('.tab-btn');
+        
+        tabs.forEach(tab => tab.classList.remove('active'));
+        buttons.forEach(btn => btn.classList.remove('active'));
+        
+        tabs[tabIndex].classList.add('active');
+        buttons[tabIndex].classList.add('active');
+        
+        // Scroll to top
+        document.querySelector('.modal-content').scrollTop = 0;
+    },
+
+    nextTab() {
+        if (this.currentTab < 3) {
+            this.switchTab(this.currentTab + 1);
+        }
+    },
+
+    prevTab() {
+        if (this.currentTab > 0) {
+            this.switchTab(this.currentTab - 1);
+        }
+    },
+
+    toggleNewCustomerForm() {
+        const form = document.getElementById('new-customer-form');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    },
+
+    toggleNewRouteForm() {
+        const form = document.getElementById('new-route-form');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    },
+
+    toggleNewVehicleForm() {
+        const form = document.getElementById('new-vehicle-form');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    },
+
+    async createNewCustomer() {
+        const name = document.getElementById('new-customer-name').value;
+        const email = document.getElementById('new-customer-email').value;
+        const phone = document.getElementById('new-customer-phone').value;
+        const address = document.getElementById('new-customer-address').value;
+
+        if (!name) {
+            alert('❌ Customer name is required');
+            return;
+        }
+
+        try {
+            console.log('📝 Creating new customer...');
+            const res = await fetch('/api/customers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Name: name, Email: email, Phone: phone, Address: address })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                this.newCustomerData = data;
+                console.log('✅ Customer created:', data);
+                alert('✅ Customer created! ID: ' + data.id);
+                
+                // Add to dropdown
+                const select = document.getElementById('existing-customer');
+                const option = document.createElement('option');
+                option.value = data.id;
+                option.textContent = `${data.id} - ${name}`;
+                option.selected = true;
+                select.appendChild(option);
+                
+                // Reset form
+                document.getElementById('new-customer-name').value = '';
+                document.getElementById('new-customer-email').value = '';
+                document.getElementById('new-customer-phone').value = '';
+                document.getElementById('new-customer-address').value = '';
+                this.toggleNewCustomerForm();
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (err) {
+            console.error('❌ Error creating customer:', err);
+            alert('❌ Error: ' + err.message);
+        }
+    },
+
+    async createNewRoute() {
+        const source = document.getElementById('new-route-source').value;
+        const destination = document.getElementById('new-route-destination').value;
+        const distance = document.getElementById('new-route-distance').value;
+        const time = document.getElementById('new-route-time').value;
+
+        if (!source || !destination) {
+            alert('❌ Source and Destination are required');
+            return;
+        }
+
+        try {
+            console.log('📝 Creating new route...');
+            const res = await fetch('/api/routes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Source: source, Destination: destination, Distance: distance, EstimatedTime: time })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                this.newRouteData = data;
+                console.log('✅ Route created:', data);
+                alert('✅ Route created! ID: ' + data.id);
+                
+                // Add to dropdown
+                const select = document.getElementById('existing-route');
+                const option = document.createElement('option');
+                option.value = data.id;
+                option.textContent = `${data.id} - ${source} → ${destination}`;
+                option.selected = true;
+                select.appendChild(option);
+                
+                // Reset form
+                document.getElementById('new-route-source').value = '';
+                document.getElementById('new-route-destination').value = '';
+                document.getElementById('new-route-distance').value = '';
+                document.getElementById('new-route-time').value = '';
+                this.toggleNewRouteForm();
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (err) {
+            console.error('❌ Error creating route:', err);
+            alert('❌ Error: ' + err.message);
+        }
+    },
+
+    async createNewVehicle() {
+        const number = document.getElementById('new-vehicle-number').value;
+        const type = document.getElementById('new-vehicle-type').value;
+        const capacity = document.getElementById('new-vehicle-capacity').value;
+        const status = document.getElementById('new-vehicle-status').value;
+
+        if (!number || !type || !capacity) {
+            alert('❌ Vehicle Number, Type, and Capacity are required');
+            return;
+        }
+
+        try {
+            console.log('📝 Creating new vehicle...');
+            const res = await fetch('/api/vehicles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ VehicleNumber: number, VehicleType: type, Capacity: capacity, Status: status })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                this.newVehicleData = data;
+                console.log('✅ Vehicle created:', data);
+                alert('✅ Vehicle created! ID: ' + data.id);
+                
+                // Add to dropdown
+                const select = document.getElementById('existing-vehicle');
+                const option = document.createElement('option');
+                option.value = data.id;
+                option.textContent = `${data.id} - ${number} (${type})`;
+                option.selected = true;
+                select.appendChild(option);
+                
+                // Reset form
+                document.getElementById('new-vehicle-number').value = '';
+                document.getElementById('new-vehicle-capacity').value = '';
+                this.toggleNewVehicleForm();
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (err) {
+            console.error('❌ Error creating vehicle:', err);
+            alert('❌ Error: ' + err.message);
+        }
+    },
+
+    async submitAdvancedShipment() {
+        const customerID = document.getElementById('existing-customer').value;
+        const routeID = document.getElementById('existing-route').value;
+        const vehicleID = document.getElementById('existing-vehicle').value;
+        const weight = document.getElementById('shipment-weight').value;
+        const pickup = document.getElementById('shipment-pickup').value;
+        const delivery = document.getElementById('shipment-delivery').value;
+
+        if (!customerID || !routeID || !vehicleID || !weight || !pickup || !delivery) {
+            alert('❌ Please fill all required fields');
+            return;
+        }
+
+        try {
+            console.log('📤 Submitting advanced shipment...');
+            const res = await fetch('/api/shipments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    CustomerID: customerID,
+                    RouteID: routeID,
+                    VehicleID: vehicleID,
+                    Weight: weight,
+                    PickupDate: pickup,
+                    DeliveryDate: delivery
+                })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                console.log('✅ Shipment created:', data);
+                alert('✅ Shipment created successfully! ID: ' + data.ShipmentID);
+                this.hideModal('advanced-shipment-modal');
+                this.loadDashboardData();
+                this.loadShipments();
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (err) {
+            console.error('❌ Error creating shipment:', err);
+            alert('❌ Error: ' + err.message);
+        }
+    },
+
+    // =============== EXISTING FUNCTIONS ===============
     switchView(viewId) {
         document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
