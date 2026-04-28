@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Transit | Shipment Management</title>
+    <meta name="description" content="Advanced Travel Agency and Shipment Management Dashboard">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/styles.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-container">
+        <div class="login-card glass-panel">
+            <div class="login-header">
+                <div class="logo">
+                    <ion-icon name="cube-outline"></ion-icon>
+                </div>
+                <h2>Nexus Transit</h2>
+                <p id="login-tagline">Please enter your details to sign in</p>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="login-form">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="admin" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="password123" required>
+                </div>
+                <button type="submit" class="btn-primary w-full">Sign In</button>
+                <p id="login-error" class="error-msg"></p>
+                <p class="toggle-auth">Don't have an account? <a href="#" id="show-signup">Create one</a></p>
+            </form>
+
+            <!-- Signup Form (Hidden by default) -->
+            <form id="signup-form" style="display: none;">
+                <div class="input-group">
+                    <label>New Username</label>
+                    <input type="text" id="signup-username" placeholder="Choose a username" required>
+                </div>
+                <div class="input-group">
+                    <label>New Password</label>
+                    <input type="password" id="signup-password" placeholder="Choose a password" required>
+                </div>
+                <button type="submit" class="btn-primary w-full">Create Account</button>
+                <p id="signup-error" class="error-msg"></p>
+                <p class="toggle-auth">Already have an account? <a href="#" id="show-login">Sign In</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App Container (Hidden until login) -->
+    <div class="app-container" id="app-shell" style="display: none;">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo">
+                    <ion-icon name="cube-outline"></ion-icon>
+                </div>
+                <h2>Nexus Transit</h2>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-item active" data-target="dashboard-view">
+                    <ion-icon name="grid-outline"></ion-icon>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-target="shipments-view">
+                    <ion-icon name="paper-plane-outline"></ion-icon>
+                    <span>Shipments</span>
+                </button>
+                <button class="nav-item" data-target="customers-view">
+                    <ion-icon name="people-outline"></ion-icon>
+                    <span>Customers</span>
+                </button>
+                <button class="nav-item" data-target="routes-view">
+                    <ion-icon name="map-outline"></ion-icon>
+                    <span>Routes</span>
+                </button>
+                <button class="nav-item" data-target="vehicles-view">
+                    <ion-icon name="bus-outline"></ion-icon>
+                    <span>Vehicles</span>
+                </button>
+                <button class="nav-item" data-target="drivers-view">
+                    <ion-icon name="person-outline"></ion-icon>
+                    <span>Drivers</span>
+                </button>
+            </nav>
+            <div class="user-profile">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=6366f1&color=fff" alt="Admin Profile">
+                <div class="user-info">
+                    <p class="name" id="logged-in-user">Administrator</p>
+                    <button class="logout-link" onclick="app.logout()">Logout</button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar">
+                    <ion-icon name="search-outline"></ion-icon>
+                    <input type="text" placeholder="Search shipments...">
+                </div>
+                <div class="header-actions">
+                    <button class="btn-primary" onclick="app.showModal('shipment-modal')">
+                        <ion-icon name="add-outline"></ion-icon> Create Shipment
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- Dashboard View -->
+                <section id="dashboard-view" class="view-section active">
+                    <h1 class="page-title">Overview</h1>
+                    <div class="stats-grid" id="stats-container">
+                        <!-- Stats injected by JS -->
+                    </div>
+                    <div class="recent-section">
+                        <div class="section-header">
+                            <h2>Recent Shipments</h2>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Customer</th>
+                                        <th>Route</th>
+                                        <th>Vehicle</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-shipments-table">
+                                    <tr><td colspan="5" class="text-center">No shipments found.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Data Table Views (Dynamically Loaded) -->
+                <section id="shipments-view" class="view-section">
+                    <div class="section-header"><h1>Shipments</h1></div>
+                    <div class="table-container glass-panel"><table class="data-table"><thead><tr><th>ID</th><th>Customer</th><th>Route</th><th>Vehicle</th><th>Pickup</th><th>Delivery</th><th>Status</th></tr></thead><tbody id="shipments-table"></tbody></table></div>
+                </section>
+
+                <section id="customers-view" class="view-section">
+                    <div class="section-header"><h1>Customers</h1></div>
+                    <div class="table-container glass-panel"><table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Address</th></tr></thead><tbody id="customers-table"></tbody></table></div>
+                </section>
+
+                <section id="routes-view" class="view-section">
+                    <div class="section-header"><h1>Routes</h1></div>
+                    <div class="table-container glass-panel"><table class="data-table"><thead><tr><th>ID</th><th>Source</th><th>Destination</th><th>Distance</th><th>Time</th></tr></thead><tbody id="routes-table"></tbody></table></div>
+                </section>
+
+                <section id="vehicles-view" class="view-section">
+                    <div class="section-header"><h1>Vehicles</h1></div>
+                    <div class="table-container glass-panel"><table class="data-table"><thead><tr><th>ID</th><th>Number</th><th>Type</th><th>Capacity</th><th>Status</th></tr></thead><tbody id="vehicles-table"></tbody></table></div>
+                </section>
+
+                <section id="drivers-view" class="view-section">
+                    <div class="section-header"><h1>Drivers</h1></div>
+                    <div class="table-container glass-panel"><table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>License</th><th>Phone</th><th>Vehicle</th></tr></thead><tbody id="drivers-table"></tbody></table></div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="shipment-modal" class="modal-overlay">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h2>Create New Shipment</h2>
+                <button class="close-btn" onclick="app.hideModal('shipment-modal')">&times;</button>
+            </div>
+            <form id="add-shipment-form">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Customer ID</label>
+                        <input type="number" name="CustomerID" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Route ID</label>
+                        <input type="number" name="RouteID" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Vehicle ID</label>
+                        <input type="number" name="VehicleID" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Weight (kg)</label>
+                        <input type="number" name="Weight" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Pickup Date</label>
+                        <input type="date" name="PickupDate" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Delivery Date</label>
+                        <input type="date" name="DeliveryDate" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn-primary">Save Shipment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="./js/main.js"></script>
+</body>
+</html>
+    
