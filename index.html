@@ -6,7 +6,7 @@
     <title>Nexus Transit | Shipment Management</title>
     <meta name="description" content="Advanced Travel Agency and Shipment Management Dashboard">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./styles.css">
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </head>
@@ -141,30 +141,111 @@
                     </div>
                 </section>
 
-                <!-- Data Table Views (Dynamically Loaded) -->
+                <!-- Shipments View -->
                 <section id="shipments-view" class="view-section">
                     <div class="section-header"><h1>Shipments</h1></div>
-                    <div class="table-container glass-panel"><table class="data-table"><thead><tr><th>ID</th><th>Customer</th><th>Route</th><th>Vehicle</th><th>Pickup</th><th>Delivery</th><th>Status</th></tr></thead><tbody id="shipments-table"></tbody></table></div>
+                    <div class="table-container glass-panel">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Customer</th>
+                                    <th>Route</th>
+                                    <th>Vehicle</th>
+                                    <th>Pickup</th>
+                                    <th>Delivery</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="shipments-table">
+                                <tr><td colspan="7" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
 
+                <!-- Customers View -->
                 <section id="customers-view" class="view-section">
                     <div class="section-header"><h1>Customers</h1></div>
-                    <div class="table-container glass-panel"><table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Address</th></tr></thead><tbody id="customers-table"></tbody></table></div>
+                    <div class="table-container glass-panel">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Address</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customers-table">
+                                <tr><td colspan="5" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
 
+                <!-- Routes View -->
                 <section id="routes-view" class="view-section">
                     <div class="section-header"><h1>Routes</h1></div>
-                    <div class="table-container glass-panel"><table class="data-table"><thead><tr><th>ID</th><th>Source</th><th>Destination</th><th>Distance</th><th>Time</th></tr></thead><tbody id="routes-table"></tbody></table></div>
+                    <div class="table-container glass-panel">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Source</th>
+                                    <th>Destination</th>
+                                    <th>Distance</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="routes-table">
+                                <tr><td colspan="5" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
 
+                <!-- Vehicles View -->
                 <section id="vehicles-view" class="view-section">
                     <div class="section-header"><h1>Vehicles</h1></div>
-                    <div class="table-container glass-panel"><table class="data-table"><thead><tr><th>ID</th><th>Number</th><th>Type</th><th>Capacity</th><th>Status</th></tr></thead><tbody id="vehicles-table"></tbody></table></div>
+                    <div class="table-container glass-panel">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Number</th>
+                                    <th>Type</th>
+                                    <th>Capacity</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vehicles-table">
+                                <tr><td colspan="5" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
 
+                <!-- Drivers View -->
                 <section id="drivers-view" class="view-section">
                     <div class="section-header"><h1>Drivers</h1></div>
-                    <div class="table-container glass-panel"><table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>License</th><th>Phone</th><th>Vehicle</th></tr></thead><tbody id="drivers-table"></tbody></table></div>
+                    <div class="table-container glass-panel">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>License</th>
+                                    <th>Phone</th>
+                                    <th>Vehicle</th>
+                                </tr>
+                            </thead>
+                            <tbody id="drivers-table">
+                                <tr><td colspan="5" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
             </div>
         </main>
@@ -193,7 +274,7 @@
                     </div>
                     <div class="input-group">
                         <label>Weight (kg)</label>
-                        <input type="number" name="Weight" required>
+                        <input type="number" name="Weight" step="0.01" required>
                     </div>
                     <div class="input-group">
                         <label>Pickup Date</label>
@@ -211,7 +292,6 @@
         </div>
     </div>
 
-    <script src="./js/main.js"></script>
+    <script src="./main.js"></script>
 </body>
 </html>
-    

@@ -96,26 +96,27 @@ const app = {
 
             // Validation - Check all required fields
             if (!body.CustomerID || !body.RouteID || !body.VehicleID || !body.PickupDate || !body.DeliveryDate || !body.Weight) {
-                alert('Please fill all required fields');
+                alert('❌ Please fill all required fields');
+                console.warn('Missing fields:', body);
                 return;
             }
 
             try {
+                console.log('📤 Sending shipment data:', body);
                 const res = await fetch('/api/shipments', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
                 });
 
+                const responseData = await res.json();
+                
                 if (!res.ok) {
-                    const errorData = await res.json();
-                    throw new Error(errorData.error || 'Failed to create shipment');
+                    throw new Error(responseData.error || 'Failed to create shipment');
                 }
 
-                const responseData = await res.json();
-                console.log('Shipment created successfully:', responseData);
-                
-                alert('Shipment created successfully!');
+                console.log('✅ Shipment created successfully:', responseData);
+                alert('✅ Shipment created successfully! ID: ' + responseData.ShipmentID);
                 e.target.reset(); // Reset form fields
                 this.hideModal('shipment-modal');
                 
@@ -124,8 +125,8 @@ const app = {
                 this.loadShipments();
                 
             } catch (err) {
-                console.error('Error creating shipment:', err);
-                alert('Error creating shipment: ' + err.message);
+                console.error('❌ Error creating shipment:', err);
+                alert('❌ Error creating shipment: ' + err.message);
             }
         });
     },
@@ -155,7 +156,7 @@ const app = {
         return `<span class="status-badge ${cls}">${status || 'Pending'}</span>`;
     },
 
-    // Data Loaders
+    // Data Loaders with async/await
     async loadDashboardData() {
         try {
             const [shipments, customers, vehicles, payments] = await Promise.all([
