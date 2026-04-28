@@ -110,6 +110,7 @@ app.post('/api/customers', async (req, res) => {
             [Name, Email, Phone, Address]);
         connection.release();
         
+        console.log('✅ Customer created with ID:', result.insertId);
         res.json({ id: result.insertId, ...req.body });
     } catch (err) {
         console.error('❌ Customer create error:', err.message);
@@ -205,8 +206,7 @@ app.post('/api/shipments', async (req, res) => {
             Weight,
             Status: 'Pending' 
         });
-    } catch (err) {
-        console.error('❌ Shipment create error:', err.message);
+    } catch (err) {\n        console.error('❌ Shipment create error:', err.message);
         res.status(500).json({ error: 'Error creating shipment: ' + err.message });
     }
 });
@@ -224,6 +224,27 @@ app.get('/api/routes', async (req, res) => {
     }
 });
 
+app.post('/api/routes', async (req, res) => {
+    try {
+        const { Source, Destination, Distance, EstimatedTime } = req.body;
+        
+        if (!Source || !Destination) {
+            return res.status(400).json({ error: 'Source and Destination are required' });
+        }
+
+        const connection = await pool.getConnection();
+        const [result] = await connection.query('INSERT INTO ROUTE (Source, Destination, Distance, EstimatedTime) VALUES (?, ?, ?, ?)', 
+            [Source, Destination, Distance || null, EstimatedTime || null]);
+        connection.release();
+        
+        console.log('✅ Route created with ID:', result.insertId);
+        res.json({ id: result.insertId, ...req.body });
+    } catch (err) {
+        console.error('❌ Route create error:', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // 6. VEHICLES
 app.get('/api/vehicles', async (req, res) => {
     try {
@@ -234,6 +255,31 @@ app.get('/api/vehicles', async (req, res) => {
     } catch (err) {
         console.error('❌ Vehicles fetch error:', err.message);
         res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/vehicles', async (req, res) => {
+    try {
+        const { VehicleNumber, VehicleType, Capacity, Status } = req.body;
+        
+        if (!VehicleNumber || !VehicleType || !Capacity) {
+            return res.status(400).json({ error: 'Vehicle Number, Type, and Capacity are required' });
+        }
+
+        const connection = await pool.getConnection();
+        const [result] = await connection.query('INSERT INTO VEHICLE (VehicleNumber, VehicleType, Capacity, Status) VALUES (?, ?, ?, ?)', 
+            [VehicleNumber, VehicleType, Capacity, Status || 'Available']);
+        connection.release();
+        
+        console.log('✅ Vehicle created with ID:', result.insertId);
+        res.json({ id: result.insertId, ...req.body });
+    } catch (err) {
+        console.error('❌ Vehicle create error:', err.message);
+        if (err.code === 'ER_DUP_ENTRY') {
+            res.status(400).json({ error: 'Vehicle number already exists' });
+        } else {
+            res.status(500).json({ error: err.message });
+        }
     }
 });
 
